@@ -14,14 +14,14 @@
 
 package slice
 
-//func DeleteV0[T any](src []T, index int) ([]T, error) {
-//	if src == nil || index < 0 || index >= len(src) {
-//		return nil, ErrOutOfRange
-//	}
-//	res := src[:index]
-//	res = append(res, src[index+1:]...)
-//	return res, nil
-//}
+func DeleteV0[T any](src []T, index int) ([]T, error) {
+	if src == nil || index < 0 || index >= len(src) {
+		return nil, ErrOutOfRange
+	}
+	res := src[:index]
+	res = append(res, src[index+1:]...)
+	return res, nil
+}
 
 func Delete[T any](src []T, index int) ([]T, error) {
 	if src == nil || index < 0 || index >= len(src) {

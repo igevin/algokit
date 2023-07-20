@@ -20,7 +20,17 @@ import (
 	"testing"
 )
 
+type deleteFunc[T any] func(src []T, index int) ([]T, error)
+
 func TestDelete(t *testing.T) {
+	testDelete(t, Delete[int])
+}
+
+func TestDeleteV0(t *testing.T) {
+	testDelete(t, DeleteV0[int])
+}
+
+func testDelete(t *testing.T, delete deleteFunc[int]) {
 	testCases := []struct {
 		name        string
 		src         []int
@@ -72,7 +82,7 @@ func TestDelete(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res, err := Delete(tc.src, tc.index)
+			res, err := delete(tc.src, tc.index)
 			require.Equal(t, tc.expectedErr, err)
 			if err != nil {
 				return
