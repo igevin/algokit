@@ -91,3 +91,147 @@ func testDelete(t *testing.T, delete deleteFunc[int]) {
 		})
 	}
 }
+
+func TestIndex(t *testing.T) {
+	testCases := []struct {
+		name        string
+		src         []int
+		target      int
+		expectedRes int
+	}{
+		{
+			name:        "nil",
+			src:         nil,
+			target:      1,
+			expectedRes: -1,
+		},
+		{
+			name:        "empty",
+			src:         []int{},
+			target:      1,
+			expectedRes: -1,
+		},
+		{
+			name:        "not found",
+			src:         []int{1, 2, 3},
+			target:      4,
+			expectedRes: -1,
+		},
+		{
+			name:        "found",
+			src:         []int{1, 2, 3},
+			target:      3,
+			expectedRes: 2,
+		},
+		{
+			name:        "duplicated target",
+			src:         []int{1, 2, 3, 4, 3},
+			target:      3,
+			expectedRes: 2,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := Index(tc.src, tc.target)
+			assert.Equal(t, tc.expectedRes, res)
+		})
+	}
+}
+
+func TestLastIndexOf(t *testing.T) {
+	testCases := []struct {
+		name        string
+		src         []int
+		target      int
+		expectedRes int
+	}{
+		{
+			name:        "nil",
+			src:         nil,
+			target:      1,
+			expectedRes: -1,
+		},
+		{
+			name:        "empty",
+			src:         []int{},
+			target:      1,
+			expectedRes: -1,
+		},
+		{
+			name:        "not found",
+			src:         []int{1, 2, 3},
+			target:      4,
+			expectedRes: -1,
+		},
+		{
+			name:        "found",
+			src:         []int{1, 2, 3},
+			target:      3,
+			expectedRes: 2,
+		},
+		{
+			name:        "duplicated target",
+			src:         []int{1, 2, 3, 4, 3},
+			target:      3,
+			expectedRes: 4,
+		},
+		{
+			name:        "duplicated target2",
+			src:         []int{1, 2, 3, 4, 3, 5},
+			target:      3,
+			expectedRes: 4,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := LastIndexOf(tc.src, tc.target)
+			assert.Equal(t, tc.expectedRes, res)
+		})
+	}
+}
+
+func TestIndexAll(t *testing.T) {
+	testCases := []struct {
+		name        string
+		src         []int
+		target      int
+		expectedRes []int
+	}{
+		{
+			name:        "nil",
+			src:         nil,
+			target:      1,
+			expectedRes: make([]int, 0, 0),
+		},
+		{
+			name:        "empty",
+			src:         []int{},
+			target:      1,
+			expectedRes: make([]int, 0, 0),
+		},
+		{
+			name:        "not found",
+			src:         []int{1, 2, 3},
+			target:      4,
+			expectedRes: make([]int, 0, 3),
+		},
+		{
+			name:        "found 1",
+			src:         []int{1, 2, 3},
+			target:      3,
+			expectedRes: []int{2},
+		},
+		{
+			name:        "found 2",
+			src:         []int{1, 2, 3, 4, 3},
+			target:      3,
+			expectedRes: []int{2, 4},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := IndexAll(tc.src, tc.target)
+			assert.Equal(t, tc.expectedRes, res)
+		})
+	}
+}
