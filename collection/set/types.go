@@ -21,9 +21,11 @@ type Set[T any] interface {
 	IsEmpty() bool
 	Remove(T) error
 	Size() int
+	ToSlice() []T
+	Clear()
 }
 
-type Option[T any] interface {
+type Operation[T any] interface {
 	Intersect(target Set[T]) (Set[T], error)
 	Diff(target Set[T]) (Set[T], error)
 	Union(target Set[T]) (Set[T], error)
