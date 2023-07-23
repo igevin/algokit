@@ -335,7 +335,7 @@ func TestSimpleSet_Intersect(t *testing.T) {
 			}(),
 		},
 		{
-			name: "normal",
+			name: "normal 1",
 			set: func() SimpleSet[int] {
 				s := NewSimpleSet[int]()
 				_ = s.AddAll([]int{1, 2, 3})
@@ -349,6 +349,24 @@ func TestSimpleSet_Intersect(t *testing.T) {
 			expectRes: func() *SimpleSet[int] {
 				s := NewSimpleSet[int]()
 				_ = s.AddAll([]int{1, 2})
+				return s
+			}(),
+		},
+		{
+			name: "normal 2",
+			set: func() SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return *s
+			}(),
+			target: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{2, 3, 4})
+				return s
+			}(),
+			expectRes: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{2, 3})
 				return s
 			}(),
 		},
