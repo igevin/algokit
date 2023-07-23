@@ -489,3 +489,110 @@ func TestSimpleSet_Diff(t *testing.T) {
 		})
 	}
 }
+
+func TestSimpleSet_Union(t *testing.T) {
+	testCases := []struct {
+		name        string
+		set         SimpleSet[int]
+		target      Set[int]
+		expectRes   Set[int]
+		expectError error
+	}{
+		// todo 增加不同类型的Set交叉Intersect的实现
+		{
+			name: "target is nil",
+			set: func() SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return *s
+			}(),
+			target: nil,
+			expectRes: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return s
+			}(),
+		},
+		{
+			name: "target is empty",
+			set: func() SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return *s
+			}(),
+			target: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				return s
+			}(),
+			expectRes: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return s
+			}(),
+		},
+		{
+			name: "set is empty",
+			set: func() SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				return *s
+			}(),
+			target: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2})
+				return s
+			}(),
+			expectRes: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2})
+				return s
+			}(),
+		},
+		{
+			name: "normal 1",
+			set: func() SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return *s
+			}(),
+			target: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2})
+				return s
+			}(),
+			expectRes: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return s
+			}(),
+		},
+		{
+			name: "normal 2",
+			set: func() SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3})
+				return *s
+			}(),
+			target: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{2, 3, 4})
+				return s
+			}(),
+			expectRes: func() *SimpleSet[int] {
+				s := NewSimpleSet[int]()
+				_ = s.AddAll([]int{1, 2, 3, 4})
+				return s
+			}(),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := tc.set.Union(tc.target)
+			assert.Equal(t, tc.expectError, err)
+			if err != nil {
+				return
+			}
+			assert.Equal(t, tc.expectRes, res)
+		})
+	}
+}
