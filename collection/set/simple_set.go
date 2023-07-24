@@ -36,8 +36,21 @@ func WithNewSizeOption[T comparable](size int) SimpleSetOption[T] {
 	}
 }
 
+func WithSliceOption[T comparable](data []T) SimpleSetOption[T] {
+	return func(s *SimpleSet[T]) {
+		s.m = make(map[T]struct{}, len(data))
+		for _, el := range data {
+			addToMap(s.m, el)
+		}
+	}
+}
+
+func addToMap[T comparable](m map[T]struct{}, el T) {
+	m[el] = struct{}{}
+}
+
 func (s *SimpleSet[T]) Add(t T) error {
-	s.m[t] = struct{}{}
+	addToMap(s.m, t)
 	return nil
 }
 

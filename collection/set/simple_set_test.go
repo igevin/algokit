@@ -26,6 +26,10 @@ func TestNewSimpleSet(t *testing.T) {
 
 	s = NewSimpleSet[int](WithNewSizeOption[int](10))
 	require.NotNil(t, s)
+
+	s = NewSimpleSet[int](WithSliceOption[int]([]int{1, 2, 3}))
+	require.NotNil(t, s)
+	require.Equal(t, map[int]struct{}{1: {}, 2: {}, 3: {}}, s.m)
 }
 
 func TestSimpleSet_Add(t *testing.T) {
