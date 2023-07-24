@@ -1,0 +1,33 @@
+// Copyright 2023 igevin
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package list
+
+import (
+	"errors"
+	"fmt"
+)
+
+var ErrIndexOutOfRange = errors.New("algokit: 下标超出范围")
+var ErrInvalidType = errors.New("algokit: 类型转换失败")
+
+// NewErrIndexOutOfRange 创建一个代表下标超出范围的错误
+func NewErrIndexOutOfRange(length int, index int) error {
+	return fmt.Errorf("%w，长度 %d, 下标 %d\"", ErrIndexOutOfRange, length, index)
+}
+
+// NewErrInvalidType 创建一个代表类型转换失败的错误
+func NewErrInvalidType(want, got string) error {
+	return fmt.Errorf("%w，want:%s, got:%s", ErrInvalidType, want, got)
+}
