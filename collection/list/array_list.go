@@ -18,6 +18,12 @@ type ArrayList[T any] struct {
 	data []T
 }
 
+func NewArrayListOf[T any](ts []T) *ArrayList[T] {
+	return &ArrayList[T]{
+		data: ts,
+	}
+}
+
 func (a *ArrayList[T]) Get(index int) (t T, e error) {
 	l := a.Len()
 	if index < 0 || index >= l {
@@ -27,18 +33,27 @@ func (a *ArrayList[T]) Get(index int) (t T, e error) {
 }
 
 func (a *ArrayList[T]) Append(ts ...T) error {
-	//TODO implement me
-	panic("implement me")
+	a.data = append(a.data, ts...)
+	return nil
 }
 
 func (a *ArrayList[T]) Add(index int, t T) error {
-	//TODO implement me
-	panic("implement me")
+	if index < 0 || index > len(a.data) {
+		return NewErrIndexOutOfRange(a.Len(), index)
+	}
+	a.data = append(a.data, t)
+	copy(a.data[index+1:], a.data[index:])
+	a.data[index] = t
+	return nil
 }
 
 func (a *ArrayList[T]) Set(index int, t T) error {
-	//TODO implement me
-	panic("implement me")
+	length := len(a.data)
+	if index >= length || index < 0 {
+		return NewErrIndexOutOfRange(length, index)
+	}
+	a.data[index] = t
+	return nil
 }
 
 func (a *ArrayList[T]) Delete(index int) (T, error) {
@@ -47,13 +62,11 @@ func (a *ArrayList[T]) Delete(index int) (T, error) {
 }
 
 func (a *ArrayList[T]) Len() int {
-	//TODO implement me
-	panic("implement me")
+	return len(a.data)
 }
 
 func (a *ArrayList[T]) Cap() int {
-	//TODO implement me
-	panic("implement me")
+	return cap(a.data)
 }
 
 func (a *ArrayList[T]) Range(fn func(index int, t T) error) error {
@@ -62,6 +75,7 @@ func (a *ArrayList[T]) Range(fn func(index int, t T) error) error {
 }
 
 func (a *ArrayList[T]) AsSlice() []T {
-	//TODO implement me
-	panic("implement me")
+	res := make([]T, len(a.data))
+	copy(res, a.data)
+	return res
 }
