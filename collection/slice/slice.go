@@ -20,7 +20,7 @@ func DeleteV0[T any](src []T, index int) ([]T, error) {
 	}
 	res := src[:index]
 	res = append(res, src[index+1:]...)
-	return res, nil
+	return Shrink(res), nil
 }
 
 func Delete[T any](src []T, index int) ([]T, error) {
@@ -30,7 +30,8 @@ func Delete[T any](src []T, index int) ([]T, error) {
 	for i := index; i < len(src)-1; i++ {
 		src[i] = src[i+1]
 	}
-	return src[:len(src)-1], nil
+	res := Shrink(src[:len(src)-1])
+	return res, nil
 }
 
 func Index[T comparable](src []T, target T) int {
