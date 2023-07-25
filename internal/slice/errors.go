@@ -14,10 +14,6 @@
 
 package slice
 
-import (
-	"fmt"
-)
+import "errors"
 
-func ErrSliceWrapped(err error) error {
-	return fmt.Errorf("%w", err)
-}
+var ErrOutOfRange = errors.New("index is out of range")

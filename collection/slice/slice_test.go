@@ -15,6 +15,8 @@
 package slice
 
 import (
+	"errors"
+	"github.com/igevin/algokit/internal/slice"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -41,25 +43,25 @@ func testDelete(t *testing.T, delete deleteFunc[int]) {
 		{
 			name:        "nil",
 			src:         nil,
-			expectedErr: ErrOutOfRange,
+			expectedErr: slice.ErrOutOfRange,
 		},
 		{
 			name:        "empty",
 			src:         []int{},
 			index:       0,
-			expectedErr: ErrOutOfRange,
+			expectedErr: slice.ErrOutOfRange,
 		},
 		{
 			name:        "boundary",
 			src:         []int{1, 2, 3},
 			index:       3,
-			expectedErr: ErrOutOfRange,
+			expectedErr: slice.ErrOutOfRange,
 		},
 		{
 			name:        "out of range",
 			src:         []int{1, 2, 3},
 			index:       4,
-			expectedErr: ErrOutOfRange,
+			expectedErr: slice.ErrOutOfRange,
 		},
 		{
 			name:        "first",
@@ -83,7 +85,7 @@ func testDelete(t *testing.T, delete deleteFunc[int]) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			res, err := delete(tc.src, tc.index)
-			require.Equal(t, tc.expectedErr, err)
+			require.Equal(t, tc.expectedErr, errors.Unwrap(err))
 			if err != nil {
 				return
 			}

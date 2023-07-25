@@ -14,10 +14,15 @@
 
 package slice
 
-import (
-	"fmt"
-)
-
-func ErrSliceWrapped(err error) error {
-	return fmt.Errorf("%w", err)
+func Delete[T any](src []T, index int) (res []T, t T, err error) {
+	if src == nil || index < 0 || index >= len(src) {
+		err = ErrOutOfRange
+		return
+	}
+	t = src[index]
+	for i := index; i < len(src)-1; i++ {
+		src[i] = src[i+1]
+	}
+	res = Shrink(src[:len(src)-1])
+	return
 }

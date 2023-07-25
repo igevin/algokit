@@ -14,24 +14,20 @@
 
 package slice
 
+import "github.com/igevin/algokit/internal/slice"
+
 func DeleteV0[T any](src []T, index int) ([]T, error) {
 	if src == nil || index < 0 || index >= len(src) {
-		return nil, ErrOutOfRange
+		return nil, ErrSliceWrapped(slice.ErrOutOfRange)
 	}
 	res := src[:index]
 	res = append(res, src[index+1:]...)
-	return Shrink(res), nil
+	return slice.Shrink(res), nil
 }
 
 func Delete[T any](src []T, index int) ([]T, error) {
-	if src == nil || index < 0 || index >= len(src) {
-		return nil, ErrOutOfRange
-	}
-	for i := index; i < len(src)-1; i++ {
-		src[i] = src[i+1]
-	}
-	res := Shrink(src[:len(src)-1])
-	return res, nil
+	res, _, err := slice.Delete(src, index)
+	return res, ErrSliceWrapped(err)
 }
 
 func Index[T comparable](src []T, target T) int {
