@@ -41,9 +41,10 @@ type LinkedList[T any] struct {
 }
 
 func NewLinkedList[T any]() *LinkedList[T] {
+	var t T
 	res := &LinkedList[T]{
-		head:   newNode[T](nil),
-		tail:   newNode[T](nil),
+		head:   newNode[T](t),
+		tail:   newNode[T](t),
 		length: 0,
 	}
 	res.head.next = res.tail
@@ -87,10 +88,20 @@ func (l *LinkedList[T]) Append(ts ...T) error {
 }
 
 func (l *LinkedList[T]) Add(index int, t T) error {
-	cur, err := l.getNode(index)
-	if err != nil {
-		return err
+	var (
+		cur *node[T]
+		err error
+	)
+	// special case: add first node to empty list
+	if l.Len() == 0 && index == 0 {
+		cur = l.tail
+	} else {
+		cur, err = l.getNode(index)
+		if err != nil {
+			return err
+		}
 	}
+
 	n := newNode(t)
 	prev := cur.prev
 	prev.next = n
