@@ -16,6 +16,7 @@ package list
 
 import (
 	"errors"
+	"github.com/igevin/algokit/internal/slice"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -239,6 +240,106 @@ func TestArrayList_Set(t *testing.T) {
 				return
 			}
 			assert.Equal(t, tc.wantSlice, tc.list.AsSlice())
+		})
+	}
+}
+
+func TestArrayList_Delete(t *testing.T) {
+	testCases := []struct {
+		name      string
+		list      *ArrayList[int]
+		index     int
+		wantSlice []int
+		wantVal   int
+		wantErr   error
+	}{
+		{
+			name: "deleted",
+			list: &ArrayList[int]{
+				data: []int{123, 124, 125},
+			},
+			index:     1,
+			wantSlice: []int{123, 125},
+			wantVal:   124,
+		},
+		{
+			name: "index out of range",
+			list: &ArrayList[int]{
+				data: []int{123, 100},
+			},
+			index:   12,
+			wantErr: slice.ErrOutOfRange,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			val, err := tc.list.Delete(tc.index)
+			assert.Equal(t, tc.wantErr, err)
+			// 因为返回了 error，所以我们不用继续往下比较了
+			if err != nil {
+				return
+			}
+			assert.Equal(t, tc.wantSlice, tc.list.data)
+			assert.Equal(t, tc.wantVal, val)
+		})
+	}
+}
+
+func TestArrayList_Len(t *testing.T) {
+	testCases := []struct {
+		name      string
+		expectLen int
+		list      *ArrayList[int]
+	}{
+		{
+			name:      "与实际元素数相等",
+			expectLen: 5,
+			list: &ArrayList[int]{
+				data: make([]int, 5),
+			},
+		},
+		{
+			name:      "用户传入nil",
+			expectLen: 0,
+			list: &ArrayList[int]{
+				data: nil,
+			},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			actual := testCase.list.Cap()
+			assert.Equal(t, testCase.expectLen, actual)
+		})
+	}
+}
+
+func TestArrayList_Cap(t *testing.T) {
+	testCases := []struct {
+		name      string
+		expectCap int
+		list      *ArrayList[int]
+	}{
+		{
+			name:      "与实际容量相等",
+			expectCap: 5,
+			list: &ArrayList[int]{
+				data: make([]int, 5),
+			},
+		},
+		{
+			name:      "用户传入nil",
+			expectCap: 0,
+			list: &ArrayList[int]{
+				data: nil,
+			},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			actual := testCase.list.Cap()
+			assert.Equal(t, testCase.expectCap, actual)
 		})
 	}
 }

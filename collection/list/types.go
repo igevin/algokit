@@ -33,8 +33,6 @@ type List[T any] interface {
 	Len() int
 	// Cap 返回容量
 	Cap() int
-	// Range 遍历 List 的所有元素
-	Range(fn func(index int, t T) error) error
 	// AsSlice 将 List 转化为一个切片
 	// 不允许返回nil，在没有元素的情况下，
 	// 必须返回一个长度和容量都为 0 的切片

@@ -14,6 +14,8 @@
 
 package list
 
+import "github.com/igevin/algokit/internal/slice"
+
 type ArrayList[T any] struct {
 	data []T
 }
@@ -57,8 +59,12 @@ func (a *ArrayList[T]) Set(index int, t T) error {
 }
 
 func (a *ArrayList[T]) Delete(index int) (T, error) {
-	//TODO implement me
-	panic("implement me")
+	data, t, err := slice.Delete(a.data, index)
+	if err != nil {
+		return t, err
+	}
+	a.data = data
+	return t, nil
 }
 
 func (a *ArrayList[T]) Len() int {
@@ -67,11 +73,6 @@ func (a *ArrayList[T]) Len() int {
 
 func (a *ArrayList[T]) Cap() int {
 	return cap(a.data)
-}
-
-func (a *ArrayList[T]) Range(fn func(index int, t T) error) error {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (a *ArrayList[T]) AsSlice() []T {
