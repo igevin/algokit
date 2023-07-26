@@ -17,6 +17,7 @@ package list
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"math"
 	"testing"
 )
 
@@ -100,15 +101,118 @@ func TestLinkedList_Add(t *testing.T) {
 }
 
 func TestLinkedList_Append(t *testing.T) {
+	testCases := []struct {
+		name        string
+		l           *LinkedList[int]
+		input       []int
+		res         []int
+		resReversed []int
+		expectErr   error
+	}{
+		{
+			name:        "empty list, add 1",
+			l:           NewLinkedList[int](),
+			input:       []int{1},
+			res:         []int{1},
+			resReversed: []int{1},
+		},
+		{
+			name:        "empty list, add many",
+			l:           NewLinkedList[int](),
+			input:       []int{1, 2, 3},
+			res:         []int{1, 2, 3},
+			resReversed: []int{3, 2, 1},
+		},
+		{
+			name:        "normal list, add 1",
+			l:           newLinkedListOf([]int{1, 2, 3}),
+			input:       []int{4},
+			res:         []int{1, 2, 3, 4},
+			resReversed: []int{4, 3, 2, 1},
+		},
+		{
+			name:        "normal list, add many",
+			l:           newLinkedListOf([]int{1, 2, 3}),
+			input:       []int{4, 5, 6},
+			res:         []int{1, 2, 3, 4, 5, 6},
+			resReversed: []int{6, 5, 4, 3, 2, 1},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			length := tc.l.Len()
+			err := tc.l.Append(tc.input...)
+			assert.Equal(t, tc.expectErr, err)
+			if err != nil {
+				return
+			}
+			// 1. check length
+			assert.Equal(t, len(tc.input), tc.l.Len()-length)
 
+			// 2. check order
+			res := make([]int, 0, tc.l.Len())
+			cur := tc.l.head.next
+			for cur != tc.l.tail {
+				res = append(res, cur.val)
+				cur = cur.next
+			}
+			assert.Equal(t, tc.res, res)
+
+			// 3. check order reversed
+			resReversed := make([]int, 0, tc.l.Len())
+			cur = tc.l.tail.prev
+			for cur != tc.l.head {
+				resReversed = append(resReversed, cur.val)
+				cur = cur.prev
+			}
+			assert.Equal(t, tc.resReversed, resReversed)
+		})
+	}
 }
 
 func TestLinkedList_AsSlice(t *testing.T) {
-
+	testCases := []struct {
+		name      string
+		l         *LinkedList[int]
+		expectRes []int
+	}{
+		{
+			name:      "empty",
+			l:         NewLinkedList[int](),
+			expectRes: []int{},
+		},
+		{
+			name:      "not empty",
+			l:         newLinkedListOf([]int{1, 2, 3}),
+			expectRes: []int{1, 2, 3},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expectRes, tc.l.AsSlice())
+		})
+	}
 }
 
 func TestLinkedList_Cap(t *testing.T) {
-
+	testCases := []struct {
+		name string
+		l    *LinkedList[int]
+	}{
+		{
+			name: "empty",
+			l:    NewLinkedList[int](),
+		},
+		{
+			name: "not empty",
+			l:    newLinkedListOf([]int{1, 2, 3}),
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, math.MaxInt, tc.l.Cap())
+		})
+	}
 }
 
 func TestLinkedList_Delete(t *testing.T) {
@@ -120,7 +224,27 @@ func TestLinkedList_Get(t *testing.T) {
 }
 
 func TestLinkedList_Len(t *testing.T) {
-
+	testCases := []struct {
+		name   string
+		l      *LinkedList[int]
+		length int
+	}{
+		{
+			name:   "empty",
+			l:      NewLinkedList[int](),
+			length: 0,
+		},
+		{
+			name:   "not empty",
+			l:      newLinkedListOf([]int{1, 2, 3}),
+			length: 3,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.length, tc.l.Len())
+		})
+	}
 }
 
 func TestLinkedList_Set(t *testing.T) {
