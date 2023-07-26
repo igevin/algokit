@@ -368,7 +368,67 @@ func TestLinkedList_Len(t *testing.T) {
 }
 
 func TestLinkedList_Set(t *testing.T) {
-
+	testCases := []struct {
+		name        string
+		l           *LinkedList[int]
+		index       int
+		val         int
+		expectError error
+	}{
+		{
+			name:        "empty",
+			l:           NewLinkedList[int](),
+			index:       0,
+			expectError: ErrIndexOutOfRange,
+		},
+		{
+			name:        "only one, out of range",
+			l:           newLinkedListOf([]int{1}),
+			index:       1,
+			expectError: ErrIndexOutOfRange,
+		},
+		{
+			name:  "only one, normal",
+			l:     newLinkedListOf([]int{1}),
+			index: 0,
+			val:   2,
+		},
+		{
+			name:        "normal, out of range",
+			l:           newLinkedListOf([]int{1, 2, 3}),
+			index:       3,
+			expectError: ErrIndexOutOfRange,
+		},
+		{
+			name:  "normal, set first",
+			l:     newLinkedListOf([]int{1, 2, 3}),
+			index: 0,
+			val:   10,
+		},
+		{
+			name:  "normal, get last",
+			l:     newLinkedListOf([]int{1, 2, 3}),
+			index: 2,
+			val:   10,
+		},
+		{
+			name:  "normal, get normal",
+			l:     newLinkedListOf([]int{1, 2, 3}),
+			index: 1,
+			val:   10,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.l.Set(tc.index, tc.val)
+			assert.Equal(t, tc.expectError, err)
+			if err != nil {
+				return
+			}
+			res, _ := tc.l.Get(tc.index)
+			assert.Equal(t, tc.val, res)
+		})
+	}
 }
 
 func newLinkedListOf[T any](ts []T) *LinkedList[T] {
