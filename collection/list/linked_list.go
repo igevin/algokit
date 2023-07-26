@@ -123,7 +123,8 @@ func (l *LinkedList[T]) Set(index int, t T) error {
 func (l *LinkedList[T]) Delete(index int) (T, error) {
 	cur, err := l.getNode(index)
 	if err != nil {
-		return cur.val, err
+		var t T
+		return t, err
 	}
 	prev := cur.prev
 	next := cur.next

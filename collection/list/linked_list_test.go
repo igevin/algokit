@@ -150,22 +150,10 @@ func TestLinkedList_Append(t *testing.T) {
 			assert.Equal(t, len(tc.input), tc.l.Len()-length)
 
 			// 2. check order
-			res := make([]int, 0, tc.l.Len())
-			cur := tc.l.head.next
-			for cur != tc.l.tail {
-				res = append(res, cur.val)
-				cur = cur.next
-			}
-			assert.Equal(t, tc.res, res)
+			testListOrder(t, tc.l, tc.res)
 
 			// 3. check order reversed
-			resReversed := make([]int, 0, tc.l.Len())
-			cur = tc.l.tail.prev
-			for cur != tc.l.head {
-				resReversed = append(resReversed, cur.val)
-				cur = cur.prev
-			}
-			assert.Equal(t, tc.resReversed, resReversed)
+			testListOrderReverse(t, tc.l, tc.resReversed)
 		})
 	}
 }
@@ -216,7 +204,80 @@ func TestLinkedList_Cap(t *testing.T) {
 }
 
 func TestLinkedList_Delete(t *testing.T) {
-
+	testCases := []struct {
+		name          string
+		l             *LinkedList[int]
+		index         int
+		expectRes     int
+		ordered       []int
+		orderReversed []int
+		expectError   error
+	}{
+		{
+			name:        "empty",
+			l:           NewLinkedList[int](),
+			index:       0,
+			expectError: ErrIndexOutOfRange,
+		},
+		{
+			name:        "only one, out of range",
+			l:           newLinkedListOf([]int{1}),
+			index:       1,
+			expectError: ErrIndexOutOfRange,
+		},
+		{
+			name:          "only one, normal",
+			l:             newLinkedListOf([]int{1}),
+			index:         0,
+			expectRes:     1,
+			ordered:       []int{},
+			orderReversed: []int{},
+		},
+		{
+			name:        "normal, out of range",
+			l:           newLinkedListOf([]int{1, 2, 3}),
+			index:       3,
+			expectError: ErrIndexOutOfRange,
+		},
+		{
+			name:          "normal, delete first",
+			l:             newLinkedListOf([]int{1, 2, 3}),
+			index:         0,
+			expectRes:     1,
+			ordered:       []int{2, 3},
+			orderReversed: []int{3, 2},
+		},
+		{
+			name:          "normal, delete last",
+			l:             newLinkedListOf([]int{1, 2, 3}),
+			index:         2,
+			expectRes:     3,
+			ordered:       []int{1, 2},
+			orderReversed: []int{2, 1},
+		},
+		{
+			name:          "normal, delete normal",
+			l:             newLinkedListOf([]int{1, 2, 3}),
+			index:         1,
+			expectRes:     2,
+			ordered:       []int{1, 3},
+			orderReversed: []int{3, 1},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			length := tc.l.Len()
+			res, err := tc.l.Delete(tc.index)
+			assert.Equal(t, tc.expectError, err)
+			if err != nil {
+				return
+			}
+			assert.Equal(t, tc.expectRes, res)
+			assert.Equal(t, 1, length-tc.l.Len())
+			testListOrder(t, tc.l, tc.ordered)
+			testListOrderReverse(t, tc.l, tc.orderReversed)
+		})
+	}
 }
 
 func TestLinkedList_Get(t *testing.T) {
@@ -255,4 +316,24 @@ func newLinkedListOf[T any](ts []T) *LinkedList[T] {
 	res := NewLinkedList[T]()
 	_ = res.Append(ts...)
 	return res
+}
+
+func testListOrder(t *testing.T, l *LinkedList[int], expected []int) {
+	res := make([]int, 0, l.Len())
+	cur := l.head.next
+	for cur != l.tail {
+		res = append(res, cur.val)
+		cur = cur.next
+	}
+	assert.Equal(t, expected, res)
+}
+
+func testListOrderReverse(t *testing.T, l *LinkedList[int], expected []int) {
+	resReversed := make([]int, 0, l.Len())
+	cur := l.tail.prev
+	for cur != l.head {
+		resReversed = append(resReversed, cur.val)
+		cur = cur.prev
+	}
+	assert.Equal(t, expected, resReversed)
 }
