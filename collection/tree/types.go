@@ -14,8 +14,8 @@
 
 package tree
 
-type BinarySearchTree[K comparable, V any] interface {
-	Insert(key K, value V) error
-	Delete(key K) error
-	Search(key K) (K, bool)
+type BinarySearchTree[K any, V any] interface {
+	Add(key K, value V) error
+	Delete(key K)
+	Find(key K) (V, error)
 }
