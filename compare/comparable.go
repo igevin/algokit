@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package comparable
+package compare
 
 type Comparable[T any] interface {
 	Compare(t Comparable[T]) int
@@ -26,11 +26,11 @@ type RealNumber interface {
 		~float32 | ~float64
 }
 
-type ComparePrime interface {
+type ComparablePrime interface {
 	RealNumber | string
 }
 
-func PrimeComparator[T ComparePrime](src, dst T) int {
+func PrimeComparator[T ComparablePrime](src, dst T) int {
 	if src > dst {
 		return 1
 	}
