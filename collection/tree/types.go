@@ -16,6 +16,6 @@ package tree
 
 type BinarySearchTree[K any, V any] interface {
 	Add(key K, value V) error
-	Delete(key K)
+	Delete(key K) error
 	Find(key K) (V, error)
 }

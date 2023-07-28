@@ -39,7 +39,7 @@ type RBTree[K any, V any] struct {
 }
 
 func (rb *RBTree[K, V]) Size() int {
-	if rb == nil {
+	if rb == nil || rb.root == nil {
 		return 0
 	}
 	return rb.size
@@ -69,35 +69,40 @@ func NewRBTree[K any, V any](compare compare.Comparator[K]) *RBTree[K, V] {
 
 func newRBNode[K any, V any](key K, value V) *rbNode[K, V] {
 	return &rbNode[K, V]{
-		key:    key,
-		value:  value,
-		color:  Red,
-		left:   nil,
-		right:  nil,
-		parent: nil,
+		key:   key,
+		value: value,
+		color: Red,
 	}
 }
 
 // Add 增加节点
 func (rb *RBTree[K, V]) Add(key K, value V) error {
-	return rb.addNode(newRBNode(key, value))
+	node := newRBNode(key, value)
+	err := rb.addNode(node)
+	if err != nil {
+		return err
+	}
+	rb.fixAfterAdd(node)
+	return nil
 }
 
 // Delete 删除节点
-func (rb *RBTree[K, V]) Delete(key K) {
+func (rb *RBTree[K, V]) Delete(key K) error {
 	if node := rb.findNode(key); node != nil {
 		rb.deleteNode(node)
 	}
+	return nil
 }
 
 // Find 查找节点
 func (rb *RBTree[K, V]) Find(key K) (V, error) {
-	var v V
 	if node := rb.findNode(key); node != nil {
 		return node.value, nil
 	}
+	var v V
 	return v, ErrRBTreeNodeNotFound
 }
+
 func (rb *RBTree[K, V]) Set(key K, value V) error {
 	if node := rb.findNode(key); node != nil {
 		node.setNode(value)
@@ -108,39 +113,33 @@ func (rb *RBTree[K, V]) Set(key K, value V) error {
 
 // addNode 插入新节点
 func (rb *RBTree[K, V]) addNode(node *rbNode[K, V]) error {
-	var fixNode *rbNode[K, V]
 	if rb.root == nil {
-		rb.root = newRBNode[K, V](node.key, node.value)
-		fixNode = rb.root
-	} else {
-		t := rb.root
-		cmp := 0
-		parent := &rbNode[K, V]{}
-		for t != nil {
-			parent = t
-			cmp = rb.compare(node.key, t.key)
-			if cmp < 0 {
-				t = t.left
-			} else if cmp > 0 {
-				t = t.right
-			} else if cmp == 0 {
-				return ErrRBTreeSameNode
-			}
-		}
-		fixNode = &rbNode[K, V]{
-			key:    node.key,
-			parent: parent,
-			value:  node.value,
-			color:  Red,
-		}
+		rb.root = node
+		rb.size++
+		return nil
+	}
+	t := rb.root
+	cmp := 0
+	var parent *rbNode[K, V]
+	for t != nil {
+		parent = t
+		cmp = rb.compare(node.key, t.key)
 		if cmp < 0 {
-			parent.left = fixNode
-		} else {
-			parent.right = fixNode
+			t = t.left
+		} else if cmp > 0 {
+			t = t.right
+		} else if cmp == 0 {
+			return ErrRBTreeSameNode
 		}
 	}
+	node.parent = parent
+	if cmp < 0 {
+		parent.left = node
+	} else {
+		parent.right = node
+	}
 	rb.size++
-	rb.fixAfterAdd(fixNode)
+	//rb.fixAfterAdd(node)
 	return nil
 }
 
@@ -180,7 +179,7 @@ func (rb *RBTree[K, V]) deleteNode(node *rbNode[K, V]) {
 		node.left = nil
 		node.right = nil
 		node.parent = nil
-		if node.getColor() {
+		if node.isBlack() {
 			rb.fixAfterDelete(replacement)
 		}
 	} else if node.parent == nil {
@@ -188,7 +187,7 @@ func (rb *RBTree[K, V]) deleteNode(node *rbNode[K, V]) {
 		rb.root = nil
 	} else {
 		// node子节点均为空
-		if node.getColor() {
+		if node.isBlack() {
 			rb.fixAfterDelete(node)
 		}
 		if node.parent != nil {
@@ -209,21 +208,21 @@ func (rb *RBTree[K, V]) deleteNode(node *rbNode[K, V]) {
 func (rb *RBTree[K, V]) findSuccessor(node *rbNode[K, V]) *rbNode[K, V] {
 	if node == nil {
 		return nil
-	} else if node.right != nil {
+	}
+	if node.right != nil {
 		p := node.right
 		for p.left != nil {
 			p = p.left
 		}
 		return p
-	} else {
-		p := node.parent
-		ch := node
-		for p != nil && ch == p.right {
-			ch = p
-			p = p.parent
-		}
-		return p
 	}
+	p := node.parent
+	ch := node
+	for p != nil && ch == p.right {
+		ch = p
+		p = p.parent
+	}
+	return p
 
 }
 
@@ -250,9 +249,9 @@ func (rb *RBTree[K, V]) findNode(key K) *rbNode[K, V] {
 // fixAddRightBlack 叔叔节点是黑色左节点
 func (rb *RBTree[K, V]) fixAfterAdd(x *rbNode[K, V]) {
 	x.color = Red
-	for x != nil && x != rb.root && x.getParent().getColor() == Red {
+	for x != nil && x != rb.root && x.getParent().isRed() {
 		uncle := x.getUncle()
-		if uncle.getColor() == Red {
+		if uncle.isRed() {
 			x = rb.fixUncleRed(x, uncle)
 			continue
 		}
@@ -327,7 +326,7 @@ func (rb *RBTree[K, V]) fixAddRightBlack(x *rbNode[K, V]) *rbNode[K, V] {
 // fixAfterDelete 删除时着色旋转
 // 根据x是节点位置分为fixAfterDeleteLeft,fixAfterDeleteRight两种情况
 func (rb *RBTree[K, V]) fixAfterDelete(x *rbNode[K, V]) {
-	for x != rb.root && x.getColor() == Black {
+	for x != rb.root && x.isBlack() {
 		if x == x.parent.getLeft() {
 			x = rb.fixAfterDeleteLeft(x)
 		} else {
@@ -340,13 +339,13 @@ func (rb *RBTree[K, V]) fixAfterDelete(x *rbNode[K, V]) {
 // fixAfterDeleteLeft 处理x为左子节点时的平衡处理
 func (rb *RBTree[K, V]) fixAfterDeleteLeft(x *rbNode[K, V]) *rbNode[K, V] {
 	sib := x.getParent().getRight()
-	if sib.getColor() == Red {
+	if sib.isRed() {
 		sib.setColor(Black)
 		sib.getParent().setColor(Red)
 		rb.rotateLeft(x.getParent())
 		sib = x.getParent().getRight()
 	}
-	if sib.getLeft().getColor() == Black && sib.getRight().getColor() == Black {
+	if sib.getLeft().isBlack() && sib.getRight().isBlack() {
 		sib.setColor(Red)
 		x = x.getParent()
 	} else {
@@ -368,17 +367,17 @@ func (rb *RBTree[K, V]) fixAfterDeleteLeft(x *rbNode[K, V]) *rbNode[K, V] {
 // fixAfterDeleteRight 处理x为右子节点时的平衡处理
 func (rb *RBTree[K, V]) fixAfterDeleteRight(x *rbNode[K, V]) *rbNode[K, V] {
 	sib := x.getParent().getLeft()
-	if sib.getColor() == Red {
+	if sib.isRed() {
 		sib.setColor(Black)
 		x.getParent().setColor(Red)
 		rb.rotateRight(x.getParent())
 		sib = x.getBrother()
 	}
-	if sib.getRight().getColor() == Black && sib.getLeft().getColor() == Black {
+	if sib.getRight().isBlack() && sib.getLeft().isBlack() {
 		sib.setColor(Red)
 		x = x.getParent()
 	} else {
-		if sib.getLeft().getColor() == Black {
+		if sib.getLeft().isBlack() {
 			sib.getRight().setColor(Black)
 			sib.setColor(Red)
 			rb.rotateLeft(sib)

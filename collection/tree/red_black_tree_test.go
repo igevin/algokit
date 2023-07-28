@@ -263,48 +263,42 @@ func TestRBTree_Delete(t *testing.T) {
 		name   string
 		delKey int
 		key    []int
-		want   bool
 		size   int
 	}{
 		{
 			name:   "nil",
 			delKey: 0,
 			key:    nil,
-			want:   true,
 			size:   0,
 		},
 		{
 			name:   "node-empty",
 			delKey: 0,
 			key:    []int{4, 5, 6, 7, 8, 9, 10, 11, 12},
-			want:   true,
 			size:   9,
 		},
 		{
 			name:   "左右非空子节点,删除节点为黑色",
 			delKey: 11,
 			key:    []int{4, 5, 6, 7, 8, 9, 10, 11, 12},
-			want:   true,
 			size:   8,
 		},
 		{
 			name:   "左右只有一个非空子节点,删除节点为黑色",
 			delKey: 11,
 			key:    []int{4, 5, 6, 7, 8, 9, 11, 12},
-			want:   true,
-			size:   7,
+			//want:   true,
+			size: 7,
 		},
 		{
 			name:   "左右均为空节点,删除节点为黑色",
 			delKey: 12,
 			key:    []int{4, 5, 6, 7, 8, 9, 12},
-			want:   true,
 			size:   6,
 		}, {
 			name:   "左右非空子节点,删除节点为红色",
 			delKey: 5,
 			key:    []int{4, 5, 6, 7, 8, 9, 10, 11, 12},
-			want:   true,
 			size:   8,
 		},
 		// 此状态无法构造出正确的红黑树
@@ -312,7 +306,6 @@ func TestRBTree_Delete(t *testing.T) {
 		//	name:   "左右只有一个非空子节点,删除节点为红色",
 		//	delKey: 5,
 		//	key:    []int{4, 5, 6, 7, 8, 9, 11, 12},
-		//	want:   true,
 		// },
 	}
 	for _, tc := range testCases {
@@ -324,9 +317,10 @@ func TestRBTree_Delete(t *testing.T) {
 					panic(err)
 				}
 			}
-			assert.Equal(t, tc.want, IsRedBlackTree[int](rbTree.root))
-			rbTree.Delete(tc.delKey)
-			assert.Equal(t, tc.want, IsRedBlackTree[int](rbTree.root))
+			assert.True(t, IsRedBlackTree[int](rbTree.root))
+			err := rbTree.Delete(tc.delKey)
+			require.NoError(t, err)
+			assert.True(t, IsRedBlackTree[int](rbTree.root))
 			assert.Equal(t, tc.size, rbTree.Size())
 		})
 	}
@@ -383,54 +377,6 @@ func TestRBTree_Find(t *testing.T) {
 				return
 			}
 			assert.Equal(t, tc.find, findNode)
-		})
-	}
-}
-
-func TestRBTree_addNode(t *testing.T) {
-	testCases := []struct {
-		name    string
-		k       []int
-		want    bool
-		wantErr error
-	}{
-		{
-			name: "nil",
-			k:    nil,
-			want: true,
-		},
-		{
-			name: "case1",
-			k:    []int{1, 2, 3, 4},
-			want: true,
-		},
-		{
-			name:    "same",
-			k:       []int{0, 0, 1, 2, 2, 3},
-			want:    true,
-			wantErr: ErrRBTreeSameNode,
-		},
-		{
-			name:    "disorder",
-			k:       []int{1, 2, 0, 3, 5, 4},
-			want:    true,
-			wantErr: nil,
-		},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, string](compare.PrimeComparator[int])
-			for i := 0; i < len(tc.k); i++ {
-				err := redBlackTree.addNode(&rbNode[int, string]{
-					key: tc.k[i],
-				})
-				if err != nil {
-					assert.Equal(t, tc.wantErr, err)
-				}
-			}
-			res := IsRedBlackTree[int](redBlackTree.root)
-			assert.Equal(t, tc.want, res)
-
 		})
 	}
 }
