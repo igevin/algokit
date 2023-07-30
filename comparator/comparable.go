@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package compare
+package comparator
 
 type Comparable[T any] interface {
 	Compare(t Comparable[T]) int
 }
 
-type Comparator[T any] func(src T, dst T) int
+type Compare[T any] func(src T, dst T) int
 
 type RealNumber interface {
 	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |

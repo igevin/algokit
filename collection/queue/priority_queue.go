@@ -16,7 +16,7 @@ package queue
 
 import (
 	"errors"
-	"github.com/igevin/algokit/compare"
+	"github.com/igevin/algokit/comparator"
 	"github.com/igevin/algokit/internal/slice"
 )
 
@@ -30,7 +30,7 @@ var (
 // 当capacity > 0 时，为有界队列，初始化后就固定容量，不会扩缩容
 type PriorityQueue[T any] struct {
 	// 用于比较前一个元素是否小于后一个元素
-	comparator compare.Comparator[T]
+	comparator comparator.Compare[T]
 	// 队列容量
 	capacity int
 	// 队列中的元素，为便于计算父子节点的index，0位置留空，根节点从1开始
@@ -120,7 +120,7 @@ func (p *PriorityQueue[T]) heapify(data []T, n, i int) {
 }
 
 // NewPriorityQueue 创建优先队列 capacity <= 0 时，为无界队列，否则有有界队列
-func NewPriorityQueue[T any](capacity int, compare compare.Comparator[T]) *PriorityQueue[T] {
+func NewPriorityQueue[T any](capacity int, compare comparator.Compare[T]) *PriorityQueue[T] {
 	sliceCap := capacity + 1
 	if capacity < 1 {
 		capacity = 0

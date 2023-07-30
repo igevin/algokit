@@ -15,7 +15,7 @@
 package queue
 
 import (
-	"github.com/igevin/algokit/compare"
+	"github.com/igevin/algokit/comparator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -32,14 +32,14 @@ func TestNewPriorityQueue(t *testing.T) {
 	}{
 		{
 			name:     "无边界",
-			q:        NewPriorityQueue(0, compare.PrimeComparator[int]),
+			q:        NewPriorityQueue(0, comparator.PrimeComparator[int]),
 			capacity: 0,
 			data:     data,
 			expected: []int{1, 2, 3, 4, 5, 6},
 		},
 		{
 			name:     "有边界 ",
-			q:        NewPriorityQueue(len(data), compare.PrimeComparator[int]),
+			q:        NewPriorityQueue(len(data), comparator.PrimeComparator[int]),
 			capacity: len(data),
 			data:     data,
 			expected: []int{1, 2, 3, 4, 5, 6},
@@ -95,7 +95,7 @@ func TestPriorityQueue_Peek(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := NewPriorityQueue[int](tc.capacity, compare.PrimeComparator[int])
+			q := NewPriorityQueue[int](tc.capacity, comparator.PrimeComparator[int])
 			for _, el := range tc.data {
 				err := q.Enqueue(el)
 				require.NoError(t, err)
@@ -155,7 +155,7 @@ func TestPriorityQueue_Enqueue(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := priorityQueueOf(tc.capacity, tc.data, compare.PrimeComparator[int])
+			q := priorityQueueOf(tc.capacity, tc.data, comparator.PrimeComparator[int])
 			require.NotNil(t, q)
 			err := q.Enqueue(tc.element)
 			assert.Equal(t, tc.wantErr, err)
@@ -199,7 +199,7 @@ func TestPriorityQueue_EnqueueElement(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := priorityQueueOf(0, tc.data, compare.PrimeComparator[int])
+			q := priorityQueueOf(0, tc.data, comparator.PrimeComparator[int])
 			require.NotNil(t, q)
 			err := q.Enqueue(tc.element)
 			require.NoError(t, err)
@@ -246,7 +246,7 @@ func TestPriorityQueue_EnqueueHeapStruct(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := NewPriorityQueue[int](tc.capacity, compare.PrimeComparator[int])
+			q := NewPriorityQueue[int](tc.capacity, comparator.PrimeComparator[int])
 			for i, el := range tc.data {
 				require.NoError(t, q.Enqueue(el))
 				// 检查中途堆结构堆调整，是否符合预期
@@ -290,7 +290,7 @@ func TestPriorityQueue_Dequeue(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := priorityQueueOf(0, tc.data, compare.PrimeComparator[int])
+			q := priorityQueueOf(0, tc.data, comparator.PrimeComparator[int])
 			require.NotNil(t, q)
 			val, err := q.Dequeue()
 			assert.Equal(t, tc.wantErr, err)
@@ -328,7 +328,7 @@ func TestPriorityQueue_DequeueComplexCheck(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := priorityQueueOf(tc.capacity, tc.data, compare.PrimeComparator[int])
+			q := priorityQueueOf(tc.capacity, tc.data, comparator.PrimeComparator[int])
 			require.NotNil(t, q)
 			i := 0
 			prev := -1
@@ -441,7 +441,7 @@ func TestPriorityQueue_Shrink(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			q := NewPriorityQueue[int](tc.originCap, compare.PrimeComparator[int])
+			q := NewPriorityQueue[int](tc.originCap, comparator.PrimeComparator[int])
 			for i := 0; i < tc.enqueueLoop; i++ {
 				err := q.Enqueue(i)
 				if err != nil {
@@ -460,7 +460,7 @@ func TestPriorityQueue_Shrink(t *testing.T) {
 	}
 }
 
-func priorityQueueOf(capacity int, data []int, compare compare.Comparator[int]) *PriorityQueue[int] {
+func priorityQueueOf(capacity int, data []int, compare comparator.Compare[int]) *PriorityQueue[int] {
 	q := NewPriorityQueue[int](capacity, compare)
 	for _, el := range data {
 		err := q.Enqueue(el)

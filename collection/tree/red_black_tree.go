@@ -16,7 +16,7 @@ package tree
 
 import (
 	"errors"
-	"github.com/igevin/algokit/compare"
+	"github.com/igevin/algokit/comparator"
 )
 
 type color bool
@@ -34,7 +34,7 @@ var (
 
 type RBTree[K any, V any] struct {
 	root    *rbNode[K, V]
-	compare compare.Comparator[K]
+	compare comparator.Compare[K]
 	size    int
 }
 
@@ -60,7 +60,7 @@ func (node *rbNode[K, V]) setNode(v V) {
 }
 
 // NewRBTree 构建红黑树
-func NewRBTree[K any, V any](compare compare.Comparator[K]) *RBTree[K, V] {
+func NewRBTree[K any, V any](compare comparator.Compare[K]) *RBTree[K, V] {
 	return &RBTree[K, V]{
 		compare: compare,
 		root:    nil,

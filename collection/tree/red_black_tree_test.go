@@ -15,7 +15,7 @@
 package tree
 
 import (
-	"github.com/igevin/algokit/compare"
+	"github.com/igevin/algokit/comparator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -24,12 +24,12 @@ import (
 func TestNewRBTree(t *testing.T) {
 	testCases := []struct {
 		name      string
-		compare   compare.Comparator[int]
+		compare   comparator.Compare[int]
 		expectRes bool
 	}{
 		{
 			name:      "int",
-			compare:   compare.PrimeComparator[int],
+			compare:   comparator.PrimeComparator[int],
 			expectRes: true,
 		},
 		{
@@ -243,7 +243,7 @@ func TestRBTree_Add(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -310,7 +310,7 @@ func TestRBTree_Delete(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
@@ -365,7 +365,7 @@ func TestRBTree_Find(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := rbTree.Add(tc.k[i], tc.k[i])
 				require.NoError(t, err)
@@ -459,7 +459,7 @@ func TestRBTree_deleteNode(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
@@ -515,7 +515,7 @@ func TestRBTree_findNode(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
@@ -580,7 +580,7 @@ func TestRBTree_rotateLeft(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
@@ -648,7 +648,7 @@ func TestRBTree_rotateRight(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
@@ -889,7 +889,7 @@ func TestRBNode_getBrother(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -937,7 +937,7 @@ func TestRBNode_getGrandParent(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -985,7 +985,7 @@ func TestRBNode_getUncle(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -1083,7 +1083,7 @@ func TestRBTree_findSuccessor(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -1122,7 +1122,7 @@ func TestRBTree_fixAddLeftBlack(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -1159,7 +1159,7 @@ func TestRBTree_fixAddRightBlack(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			redBlackTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			redBlackTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.k); i++ {
 				err := redBlackTree.Add(tc.k[i], i)
 				if err != nil {
@@ -1214,7 +1214,7 @@ func TestRBTree_fixAfterDeleteLeft(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
@@ -1267,7 +1267,7 @@ func TestRBTree_fixAfterDeleteRight(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			rbTree := NewRBTree[int, int](compare.PrimeComparator[int])
+			rbTree := NewRBTree[int, int](comparator.PrimeComparator[int])
 			for i := 0; i < len(tc.key); i++ {
 				err := rbTree.Add(tc.key[i], i)
 				if err != nil {
