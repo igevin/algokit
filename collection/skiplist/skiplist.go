@@ -14,36 +14,38 @@
 
 package skiplist
 
-type Interface interface {
-	Less(other interface{}) bool
-}
+import "github.com/igevin/algokit/comparator"
 
-type SkipList struct {
-	header *Element
-	tail   *Element
-	update []*Element
-	rank   []int
-	length int
-	level  int
+type SkipList[T any] struct {
+	header  *Element[T]
+	tail    *Element[T]
+	update  []*Element[T]
+	rank    []int
+	length  int
+	level   int
+	compare comparator.Compare[T]
 }
 
 // New returns an initialized skiplist.
-func New() *SkipList {
-	return &SkipList{
-		header: newElement(MaxLevel, nil),
-		tail:   nil,
-		update: make([]*Element, MaxLevel),
-		rank:   make([]int, MaxLevel),
-		length: 0,
-		level:  1,
+func New[T any](compare comparator.Compare[T]) *SkipList[T] {
+	var t T
+	return &SkipList[T]{
+		header:  newElement[T](MaxLevel, t),
+		tail:    nil,
+		update:  make([]*Element[T], MaxLevel),
+		rank:    make([]int, MaxLevel),
+		length:  0,
+		level:   1,
+		compare: compare,
 	}
 }
 
 // Init initializes or clears skiplist sl.
-func (sl *SkipList) Init() *SkipList {
-	sl.header = newElement(MaxLevel, nil)
+func (sl *SkipList[T]) Init() *SkipList[T] {
+	var t T
+	sl.header = newElement[T](MaxLevel, t)
 	sl.tail = nil
-	sl.update = make([]*Element, MaxLevel)
+	sl.update = make([]*Element[T], MaxLevel)
 	sl.rank = make([]int, MaxLevel)
 	sl.length = 0
 	sl.level = 1
@@ -51,22 +53,22 @@ func (sl *SkipList) Init() *SkipList {
 }
 
 // Front returns the first elements of skiplist sl or nil.
-func (sl *SkipList) Front() *Element {
+func (sl *SkipList[T]) Front() *Element[T] {
 	return sl.header.level[0].forward
 }
 
 // Back returns the last elements of skiplist sl or nil.
-func (sl *SkipList) Back() *Element {
+func (sl *SkipList[T]) Back() *Element[T] {
 	return sl.tail
 }
 
 // Len returns the numbler of elements of skiplist sl.
-func (sl *SkipList) Len() int {
+func (sl *SkipList[T]) Len() int {
 	return sl.length
 }
 
 // Insert inserts v, increments sl.length, and returns a new element of wrap v.
-func (sl *SkipList) Insert(v Interface) *Element {
+func (sl *SkipList[T]) Insert(v T) *Element[T] {
 	x := sl.header
 	for i := sl.level - 1; i >= 0; i-- {
 		// store rank that is crossed to reach the insert position
@@ -75,7 +77,7 @@ func (sl *SkipList) Insert(v Interface) *Element {
 		} else {
 			sl.rank[i] = sl.rank[i+1]
 		}
-		for x.level[i].forward != nil && x.level[i].forward.Value.Less(v) {
+		for x.level[i].forward != nil && sl.compare(x.level[i].forward.Value, v) < 0 {
 			sl.rank[i] += x.level[i].span
 			x = x.level[i].forward
 		}
@@ -94,7 +96,7 @@ func (sl *SkipList) Insert(v Interface) *Element {
 		sl.level = level
 	}
 
-	x = newElement(level, v)
+	x = newElement[T](level, v)
 	for i := 0; i < level; i++ {
 		x.level[i].forward = sl.update[i].level[i].forward
 		sl.update[i].level[i].forward = x
@@ -125,7 +127,7 @@ func (sl *SkipList) Insert(v Interface) *Element {
 }
 
 // deleteElement deletes e from its skiplist, and decrements sl.length.
-func (sl *SkipList) deleteElement(e *Element, update []*Element) {
+func (sl *SkipList[T]) deleteElement(e *Element[T], update []*Element[T]) {
 	for i := 0; i < sl.level; i++ {
 		if update[i].level[i].forward == e {
 			update[i].level[i].span += e.level[i].span - 1
@@ -149,9 +151,9 @@ func (sl *SkipList) deleteElement(e *Element, update []*Element) {
 
 // Remove removes e from sl if e is an element of skiplist sl.
 // It returns the element value e.Value.
-func (sl *SkipList) Remove(e *Element) interface{} {
-	x := sl.find(e.Value)                 // x.Value >= e.Value
-	if x == e && !e.Value.Less(x.Value) { // e.Value >= x.Value
+func (sl *SkipList[T]) Remove(e *Element[T]) interface{} {
+	x := sl.find(e.Value)                            // x.Value >= e.Value
+	if x == e && sl.compare(e.Value, x.Value) >= 0 { // e.Value >= x.Value
 		sl.deleteElement(x, sl.update)
 		return x.Value
 	}
@@ -160,9 +162,9 @@ func (sl *SkipList) Remove(e *Element) interface{} {
 }
 
 // Delete deletes an element e that e.Value == v, and returns e.Value or nil.
-func (sl *SkipList) Delete(v Interface) interface{} {
-	x := sl.find(v)                   // x.Value >= v
-	if x != nil && !v.Less(x.Value) { // v >= x.Value
+func (sl *SkipList[T]) Delete(v T) interface{} {
+	x := sl.find(v)                              // x.Value >= v
+	if x != nil && sl.compare(v, x.Value) >= 0 { // v >= x.Value
 		sl.deleteElement(x, sl.update)
 		return x.Value
 	}
@@ -171,9 +173,9 @@ func (sl *SkipList) Delete(v Interface) interface{} {
 }
 
 // Find finds an element e that e.Value == v, and returns e or nil.
-func (sl *SkipList) Find(v Interface) *Element {
-	x := sl.find(v)                   // x.Value >= v
-	if x != nil && !v.Less(x.Value) { // v >= x.Value
+func (sl *SkipList[T]) Find(v T) *Element[T] {
+	x := sl.find(v)                              // x.Value >= v
+	if x != nil && sl.compare(v, x.Value) >= 0 { // v >= x.Value
 		return x
 	}
 
@@ -181,10 +183,10 @@ func (sl *SkipList) Find(v Interface) *Element {
 }
 
 // find finds the first element e that e.Value >= v, and returns e or nil.
-func (sl *SkipList) find(v Interface) *Element {
+func (sl *SkipList[T]) find(v T) *Element[T] {
 	x := sl.header
 	for i := sl.level - 1; i >= 0; i-- {
-		for x.level[i].forward != nil && x.level[i].forward.Value.Less(v) {
+		for x.level[i].forward != nil && sl.compare(x.level[i].forward.Value, v) < 0 {
 			x = x.level[i].forward
 		}
 		sl.update[i] = x
@@ -196,15 +198,15 @@ func (sl *SkipList) find(v Interface) *Element {
 // GetRank finds the rank for an element e that e.Value == v,
 // Returns 0 when the element cannot be found, rank otherwise.
 // Note that the rank is 1-based due to the span of sl.header to the first element.
-func (sl *SkipList) GetRank(v Interface) int {
+func (sl *SkipList[T]) GetRank(v T) int {
 	x := sl.header
 	rank := 0
 	for i := sl.level - 1; i >= 0; i-- {
-		for x.level[i].forward != nil && x.level[i].forward.Value.Less(v) {
+		for x.level[i].forward != nil && sl.compare(x.level[i].forward.Value, v) < 0 {
 			rank += x.level[i].span
 			x = x.level[i].forward
 		}
-		if x.level[i].forward != nil && !x.level[i].forward.Value.Less(v) && !v.Less(x.level[i].forward.Value) {
+		if x.level[i].forward != nil && sl.compare(x.level[i].forward.Value, v) == 0 {
 			rank += x.level[i].span
 			return rank
 		}
@@ -215,7 +217,7 @@ func (sl *SkipList) GetRank(v Interface) int {
 
 // GetElementByRank finds an element by ites rank. The rank argument needs bo be 1-based.
 // Note that is the first element e that GetRank(e.Value) == rank, and returns e or nil.
-func (sl *SkipList) GetElementByRank(rank int) *Element {
+func (sl *SkipList[T]) GetElementByRank(rank int) *Element[T] {
 	x := sl.header
 	traversed := 0
 	for i := sl.level - 1; i >= 0; i-- {

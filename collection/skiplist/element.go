@@ -21,35 +21,35 @@ import (
 const MaxLevel = 32
 const Branch = 4
 
-type skipListLevel struct {
-	forward *Element
+type skipListLevel[T any] struct {
+	forward *Element[T]
 	span    int
 }
 
-type Element struct {
-	Value    Interface
-	backward *Element
-	level    []*skipListLevel
+type Element[T any] struct {
+	Value    T
+	backward *Element[T]
+	level    []*skipListLevel[T]
 }
 
 // Next returns the next skiplist element or nil.
-func (e *Element) Next() *Element {
+func (e *Element[T]) Next() *Element[T] {
 	return e.level[0].forward
 }
 
-// Prev returns the previous skiplist element of nil.
-func (e *Element) Prev() *Element {
+// Prev returns the previous skiplist element or nil.
+func (e *Element[T]) Prev() *Element[T] {
 	return e.backward
 }
 
 // newElement returns an initialized element.
-func newElement(level int, v Interface) *Element {
-	slLevels := make([]*skipListLevel, level)
+func newElement[T any](level int, v T) *Element[T] {
+	slLevels := make([]*skipListLevel[T], level)
 	for i := 0; i < level; i++ {
-		slLevels[i] = new(skipListLevel)
+		slLevels[i] = new(skipListLevel[T])
 	}
 
-	return &Element{
+	return &Element[T]{
 		Value:    v,
 		backward: nil,
 		level:    slLevels,
