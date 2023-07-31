@@ -14,30 +14,6 @@
 
 package queue
 
-import (
-	"errors"
-	"github.com/igevin/algokit/collection/list"
-	"github.com/igevin/algokit/internal/slice"
-)
+import "errors"
 
-type ArrayQueue[T any] struct {
-	l list.ArrayList[T]
-}
-
-func NewArrayQueueOf[T any](ts []T) *ArrayQueue[T] {
-	return &ArrayQueue[T]{
-		l: *(list.NewArrayListOf[T](ts)),
-	}
-}
-
-func (a *ArrayQueue[T]) Enqueue(t T) error {
-	return a.l.Append(t)
-}
-
-func (a *ArrayQueue[T]) Dequeue() (T, error) {
-	t, err := a.l.Delete(0)
-	if errors.Is(err, slice.ErrOutOfRange) {
-		err = ErrDequeueFromEmptyQueue
-	}
-	return t, err
-}
+var ErrDequeueFromEmptyQueue = errors.New("algokit: delete form empty queue")
