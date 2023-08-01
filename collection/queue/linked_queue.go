@@ -14,7 +14,10 @@
 
 package queue
 
-import "github.com/igevin/algokit/collection/list"
+import (
+	"errors"
+	"github.com/igevin/algokit/collection/list"
+)
 
 type LinkedQueue[T any] struct {
 	l list.LinkedList[T]
@@ -31,5 +34,9 @@ func (l *LinkedQueue[T]) Enqueue(t T) error {
 }
 
 func (l *LinkedQueue[T]) Dequeue() (T, error) {
-	return l.l.Delete(0)
+	t, err := l.l.Delete(0)
+	if errors.Is(err, list.ErrIndexOutOfRange) {
+		err = ErrDequeueFromEmptyQueue
+	}
+	return t, err
 }
