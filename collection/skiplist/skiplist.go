@@ -14,7 +14,15 @@
 
 package skiplist
 
-import "github.com/igevin/algokit/comparator"
+import (
+	"github.com/igevin/algokit/comparator"
+	"math/rand"
+)
+
+const (
+	MaxLevel = 32 // 跳表的最大层级为 32
+	Branch   = 4  // 随机代码层数的算法中，表示概率 p = 1/4
+)
 
 type SkipList[T any] struct {
 	header  *Element[T]
@@ -26,7 +34,7 @@ type SkipList[T any] struct {
 	compare comparator.Compare[T]
 }
 
-// New returns an initialized skiplist.
+// New returns an initialized skip list.
 func New[T any](compare comparator.Compare[T]) *SkipList[T] {
 	var t T
 	return &SkipList[T]{
@@ -40,7 +48,7 @@ func New[T any](compare comparator.Compare[T]) *SkipList[T] {
 	}
 }
 
-// Init initializes or clears skiplist sl.
+// Init initializes or clears skip list sl.
 func (sl *SkipList[T]) Init() *SkipList[T] {
 	var t T
 	sl.header = newElement[T](MaxLevel, t)
@@ -52,17 +60,17 @@ func (sl *SkipList[T]) Init() *SkipList[T] {
 	return sl
 }
 
-// Front returns the first elements of skiplist sl or nil.
+// Front returns the first elements of skip list sl or nil.
 func (sl *SkipList[T]) Front() *Element[T] {
 	return sl.header.level[0].forward
 }
 
-// Back returns the last elements of skiplist sl or nil.
+// Back returns the last elements of skip list sl or nil.
 func (sl *SkipList[T]) Back() *Element[T] {
 	return sl.tail
 }
 
-// Len returns the numbler of elements of skiplist sl.
+// Len returns the length of skip list sl.
 func (sl *SkipList[T]) Len() int {
 	return sl.length
 }
@@ -126,7 +134,7 @@ func (sl *SkipList[T]) Insert(v T) *Element[T] {
 	return x
 }
 
-// deleteElement deletes e from its skiplist, and decrements sl.length.
+// deleteElement deletes e from its skip list, and decrements sl.length.
 func (sl *SkipList[T]) deleteElement(e *Element[T], update []*Element[T]) {
 	for i := 0; i < sl.level; i++ {
 		if update[i].level[i].forward == e {
@@ -149,7 +157,7 @@ func (sl *SkipList[T]) deleteElement(e *Element[T], update []*Element[T]) {
 	sl.length--
 }
 
-// Remove removes e from sl if e is an element of skiplist sl.
+// Remove removes e from sl if e is an element of skip list sl.
 // It returns the element value e.Value.
 func (sl *SkipList[T]) Remove(e *Element[T]) interface{} {
 	x := sl.find(e.Value)                            // x.Value >= e.Value
@@ -174,8 +182,8 @@ func (sl *SkipList[T]) Delete(v T) interface{} {
 
 // Find finds an element e that e.Value == v, and returns e or nil.
 func (sl *SkipList[T]) Find(v T) *Element[T] {
-	x := sl.find(v)                              // x.Value >= v
-	if x != nil && sl.compare(v, x.Value) >= 0 { // v >= x.Value
+	x := sl.find(v) // x.Value >= v
+	if x != nil && sl.compare(v, x.Value) == 0 {
 		return x
 	}
 
@@ -215,7 +223,7 @@ func (sl *SkipList[T]) GetRank(v T) int {
 	return 0
 }
 
-// GetElementByRank finds an element by ites rank. The rank argument needs bo be 1-based.
+// GetElementByRank finds an element by its rank. The rank argument needs bo be 1-based.
 // Note that is the first element e that GetRank(e.Value) == rank, and returns e or nil.
 func (sl *SkipList[T]) GetElementByRank(rank int) *Element[T] {
 	x := sl.header
@@ -231,4 +239,63 @@ func (sl *SkipList[T]) GetElementByRank(rank int) *Element[T] {
 	}
 
 	return nil
+}
+
+type skipListLevel[T any] struct {
+	forward *Element[T]
+	span    int
+}
+
+type Element[T any] struct {
+	Value    T
+	backward *Element[T]
+	level    []*skipListLevel[T]
+}
+
+// Next returns the next skip list element or nil.
+func (e *Element[T]) Next() *Element[T] {
+	return e.level[0].forward
+}
+
+// Prev returns the previous skip list element or nil.
+func (e *Element[T]) Prev() *Element[T] {
+	return e.backward
+}
+
+// newElement returns an initialized element.
+func newElement[T any](level int, v T) *Element[T] {
+	slLevels := make([]*skipListLevel[T], level)
+	for i := 0; i < level; i++ {
+		slLevels[i] = new(skipListLevel[T])
+	}
+
+	return &Element[T]{
+		Value:    v,
+		backward: nil,
+		level:    slLevels,
+	}
+}
+
+// randomLevel returns a random level.
+// Skip List的论文中，随机层数的伪代码为：
+// RandomLevel():
+//
+//	lvl = 1
+//	while random() < p and lvl < MaxLevel do
+//		lvl+=1
+//	return lvl
+//
+// 其中，p的意思为：节点有第i层指针，那么第i+1层出现的概率为p
+// redis 中，p = 1/4, maxLevel = 64
+func randomLevel() int {
+	level := 1
+	for (rand.Int31()&0xFFFF)%Branch == 0 {
+		level += 1
+	}
+
+	if level < MaxLevel {
+		return level
+	} else {
+		return MaxLevel
+	}
 }
