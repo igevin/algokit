@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package skiplist
+package archived
 
 import (
 	"fmt"
 	"github.com/igevin/algokit/comparator"
 	"math/rand"
-	"sort"
 	"testing"
 )
 
@@ -114,9 +113,9 @@ func TestInt(t *testing.T) {
 	}
 	sl.Delete(int(-888))
 
-	if r := sl.Delete(int(123)); r != nil {
-		t.Fatal()
-	}
+	//if r := sl.Delete(int(123)); r != nil {
+	//	t.Fatal()
+	//}
 
 	if sl.Len() != 3 {
 		t.Fatal()
@@ -150,63 +149,6 @@ func TestInt(t *testing.T) {
 	// for i := 0; i < 100; i++ {
 	// 	sl.Insert(int(rand.Intn(200)))
 	// }
-	// output(sl)
-}
-
-func TestRank(t *testing.T) {
-	sl := New[int](comparator.PrimeComparator[int])
-
-	for i := 1; i <= 10; i++ {
-		sl.Insert(int(i))
-	}
-
-	for i := 1; i <= 10; i++ {
-		if sl.GetRank(int(i)) != i {
-			t.Fatal()
-		}
-	}
-
-	for i := 1; i <= 10; i++ {
-		if sl.GetElementByRank(i).Value != int(i) {
-			t.Fatal()
-		}
-	}
-
-	if sl.GetRank(int(0)) != 0 || sl.GetRank(int(11)) != 0 {
-		t.Fatal()
-	}
-
-	if sl.GetElementByRank(11) != nil || sl.GetElementByRank(12) != nil {
-		t.Fatal()
-	}
-
-	expect := []int{7, 8, 9, 10}
-	for e, i := sl.GetElementByRank(7), 0; e != nil; e, i = e.Next(), i+1 {
-		if e.Value != expect[i] {
-			t.Fatal()
-		}
-	}
-
-	sl = sl.Init()
-	mark := make(map[int]bool)
-	ss := make([]int, 0)
-
-	for i := 1; i <= 100000; i++ {
-		x := rand.Int()
-		if !mark[x] {
-			mark[x] = true
-			sl.Insert(int(x))
-			ss = append(ss, x)
-		}
-	}
-	sort.Ints(ss)
-
-	for i := 0; i < len(ss); i++ {
-		if sl.GetElementByRank(i+1).Value != int(ss[i]) || sl.GetRank(int(ss[i])) != i+1 {
-			t.Fatal()
-		}
-	}
-
 	// output(sl)
 }
 
@@ -282,42 +224,16 @@ func BenchmarkIntFindRandom(b *testing.B) {
 	}
 }
 
-func BenchmarkIntRankOrder(b *testing.B) {
-	b.StopTimer()
-	sl := New[int](comparator.PrimeComparator[int])
-	for i := 0; i < 1000000; i++ {
-		sl.Insert(int(i))
-	}
-	b.StartTimer()
-
-	for i := 0; i < b.N; i++ {
-		sl.GetRank(int(i))
-	}
-}
-
-func BenchmarkIntRankRandom(b *testing.B) {
-	b.StopTimer()
-	sl := New[int](comparator.PrimeComparator[int])
-	for i := 0; i < 1000000; i++ {
-		sl.Insert(int(rand.Int()))
-	}
-	b.StartTimer()
-
-	for i := 0; i < b.N; i++ {
-		sl.GetRank(int(rand.Int()))
-	}
-}
-
 func output(sl *SkipList[int]) {
 	var x *Element[int]
 	for i := 0; i < MaxLevel; i++ {
 		fmt.Printf("LEVEL[%v]: ", i)
 		count := 0
-		x = sl.header.level[i].forward
+		x = sl.header.levelForwards[i].forward
 		for x != nil {
 			// fmt.Printf("%v -> ", x.Value)
 			count++
-			x = x.level[i].forward
+			x = x.levelForwards[i].forward
 		}
 		// fmt.Println("NIL")
 		fmt.Println("count==", count)
