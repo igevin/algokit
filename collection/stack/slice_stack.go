@@ -14,25 +14,47 @@
 
 package stack
 
+import "github.com/igevin/algokit/internal/slice"
+
 type SliceStack[T any] struct {
+	s []T
+}
+
+func NewSliceStack[T any]() *SliceStack[T] {
+	s := &SliceStack[T]{
+		s: make([]T, 0, 16),
+	}
+	return s
 }
 
 func (s *SliceStack[T]) Pop() (T, error) {
-	//TODO implement me
-	panic("implement me")
+	l := len(s.s)
+	if l == 0 {
+		var t T
+		return t, ErrStackEmpty
+	}
+	t := s.s[l-1]
+	s.s = slice.Shrink(s.s[:l-1])
+	return t, nil
 }
 
 func (s *SliceStack[T]) Push(t T) (T, error) {
-	//TODO implement me
-	panic("implement me")
+	s.s = append(s.s, t)
+	return t, nil
 }
 
 func (s *SliceStack[T]) Peek() (T, error) {
-	//TODO implement me
-	panic("implement me")
+	l := len(s.s)
+	if l == 0 {
+		var t T
+		return t, ErrStackEmpty
+	}
+	t := s.s[l-1]
+	return t, nil
 }
 
 func (s *SliceStack[T]) Empty() bool {
-	//TODO implement me
-	panic("implement me")
+	c := cap(s.s)
+	s.s = make([]T, 0, c)
+	return true
 }

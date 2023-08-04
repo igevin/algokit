@@ -14,9 +14,12 @@
 
 package stack
 
+import "errors"
+
+var ErrStackEmpty = errors.New("algokit: stack is empty")
+
 type Stack[T any] interface {
 	Pop() (T, error)
 	Push(t T) (T, error)
 	Peek() (T, error)
-	Empty() bool
 }

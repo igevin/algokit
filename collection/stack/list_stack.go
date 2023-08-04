@@ -14,25 +14,37 @@
 
 package stack
 
+import "github.com/igevin/algokit/collection/list"
+
 type ListStack[T any] struct {
+	l list.List[T]
+}
+
+func NewListStack[T any](l list.List[T]) *ListStack[T] {
+	return &ListStack[T]{
+		l: l,
+	}
 }
 
 func (l *ListStack[T]) Pop() (T, error) {
-	//TODO implement me
-	panic("implement me")
+	s := l.l.Len()
+	if s == 0 {
+		var t T
+		return t, ErrStackEmpty
+	}
+	return l.l.Delete(s - 1)
 }
 
 func (l *ListStack[T]) Push(t T) (T, error) {
-	//TODO implement me
-	panic("implement me")
+	err := l.l.Append(t)
+	return t, err
 }
 
 func (l *ListStack[T]) Peek() (T, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (l *ListStack[T]) Empty() bool {
-	//TODO implement me
-	panic("implement me")
+	s := l.l.Len()
+	if s == 0 {
+		var t T
+		return t, ErrStackEmpty
+	}
+	return l.l.Get(s - 1)
 }
