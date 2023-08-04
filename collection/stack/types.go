@@ -22,4 +22,5 @@ type Stack[T any] interface {
 	Pop() (T, error)
 	Push(t T) (T, error)
 	Peek() (T, error)
+	Len() int
 }

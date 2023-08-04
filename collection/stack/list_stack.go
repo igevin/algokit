@@ -27,7 +27,7 @@ func NewListStack[T any](l list.List[T]) *ListStack[T] {
 }
 
 func (l *ListStack[T]) Pop() (T, error) {
-	s := l.l.Len()
+	s := l.Len()
 	if s == 0 {
 		var t T
 		return t, ErrStackEmpty
@@ -41,10 +41,14 @@ func (l *ListStack[T]) Push(t T) (T, error) {
 }
 
 func (l *ListStack[T]) Peek() (T, error) {
-	s := l.l.Len()
+	s := l.Len()
 	if s == 0 {
 		var t T
 		return t, ErrStackEmpty
 	}
 	return l.l.Get(s - 1)
+}
+
+func (l *ListStack[T]) Len() int {
+	return l.l.Len()
 }

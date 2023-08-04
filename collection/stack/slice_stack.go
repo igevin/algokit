@@ -28,7 +28,7 @@ func NewSliceStack[T any]() *SliceStack[T] {
 }
 
 func (s *SliceStack[T]) Pop() (T, error) {
-	l := len(s.s)
+	l := s.Len()
 	if l == 0 {
 		var t T
 		return t, ErrStackEmpty
@@ -44,7 +44,7 @@ func (s *SliceStack[T]) Push(t T) (T, error) {
 }
 
 func (s *SliceStack[T]) Peek() (T, error) {
-	l := len(s.s)
+	l := s.Len()
 	if l == 0 {
 		var t T
 		return t, ErrStackEmpty
@@ -53,8 +53,6 @@ func (s *SliceStack[T]) Peek() (T, error) {
 	return t, nil
 }
 
-func (s *SliceStack[T]) Empty() bool {
-	c := cap(s.s)
-	s.s = make([]T, 0, c)
-	return true
+func (s *SliceStack[T]) Len() int {
+	return len(s.s)
 }
