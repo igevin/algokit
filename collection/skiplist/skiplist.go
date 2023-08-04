@@ -90,7 +90,7 @@ func (s *SkipList[T]) find(val T) *node[T] {
 	p, _ := s.traverse(val, s.levels)
 	// 由于上层的数据，下层一定有，故不管当前在第几层，直接在第0层确认到底有没有该数据即可
 	if p.forward[0] != nil && s.compare(p.forward[0].val, val) == 0 {
-		return p
+		return p.forward[0]
 	} else {
 		return nil
 	}
