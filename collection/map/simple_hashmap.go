@@ -14,64 +14,56 @@
 
 package mapx
 
-type Hashable interface {
-	// Code 返回该元素的哈希值
-	// 注意：哈希值应该尽可能的均匀以避免冲突
-	Code() uint64
-	// Equals 比较两个元素是否相等。如果返回 true，那么我们会认为两个键是一样的。
-	Equals(key any) bool
+// SimpleHashMap 是一个哈希表，采用一次性扩容
+type SimpleHashMap[K Hashable, V any] struct {
 }
 
-// HashMap 是一个哈希表，采用渐进式扩容
-type HashMap[K Hashable, V any] struct {
-}
-
-func (h *HashMap[K, V]) Keys() []K {
+func (s *SimpleHashMap[K, V]) Keys() []K {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) Values() []V {
+func (s *SimpleHashMap[K, V]) Values() []V {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) KeysValues() []V {
+func (s *SimpleHashMap[K, V]) KeysValues() []V {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) Get(key K) (V, bool) {
+func (s *SimpleHashMap[K, V]) Get(key K) (V, bool) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) GetOrDefault(key K, value V) V {
+func (s *SimpleHashMap[K, V]) GetOrDefault(key K, value V) V {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) Put(key K, value V) (V, error) {
+func (s *SimpleHashMap[K, V]) Put(key K, value V) (V, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) PutIfAbsent(key K, value V) (V, error) {
+func (s *SimpleHashMap[K, V]) PutIfAbsent(key K, value V) (V, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) Delete(key K) (V, error) {
+func (s *SimpleHashMap[K, V]) Delete(key K) (V, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) DeleteIf(key K, value V) (bool, error) {
+func (s *SimpleHashMap[K, V]) DeleteIf(key K, value V) (bool, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *HashMap[K, V]) Len() int {
+func (s *SimpleHashMap[K, V]) Len() int {
 	//TODO implement me
 	panic("implement me")
 }
