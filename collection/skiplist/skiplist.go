@@ -26,6 +26,7 @@ const (
 )
 
 var ErrNodeNotFound = errors.New("algokit: 节点未找到")
+var ErrSameNode = errors.New("algokit: 插入相同节点")
 
 // SkipList 是一个跳表，层高为levels, 自底向上为第0层、1层…… levels-1 层
 // 第0层是跳表全部数据，排成一个有序链表，之上逐层创建了索引，以加速0层链表的crud，整个跳表可以视为一个索引
@@ -97,10 +98,13 @@ func (s *SkipList[T]) find(val T) *node[T] {
 }
 
 // Insert 插入一个新的值到跳表
-func (s *SkipList[T]) Insert(val T) {
+func (s *SkipList[T]) Insert(val T) error {
 	level := randomLevel()
 	n := newNode(withVal[T](val), withLevel[T](level))
-	_, update := s.traverse(val, level)
+	p, update := s.traverse(val, level)
+	if p.forward[0] != nil && s.compare(p.forward[0].val, val) == 0 {
+		return ErrSameNode
+	}
 	for i := 0; i < level; i++ {
 		n.forward[i] = update[i].forward[i]
 		update[i].forward[i] = n
@@ -109,6 +113,7 @@ func (s *SkipList[T]) Insert(val T) {
 		s.levels = level
 	}
 	s.length++
+	return nil
 }
 
 func (s *SkipList[T]) Delete(val T) {

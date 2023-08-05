@@ -35,12 +35,16 @@ func TestSkipListNormal(t *testing.T) {
 	require.Equal(t, 0, sl.Len())
 	vals := []int{3, 2, 5, 1, 4}
 	for i, val := range vals {
-		sl.Insert(val)
+		err := sl.Insert(val)
+		assert.NoError(t, err)
 		assert.Equal(t, i+1, sl.Len())
 	}
 	res := asSlice(sl)
 	expected := []int{1, 2, 3, 4, 5}
 	assert.Equal(t, expected, res)
+
+	err := sl.Insert(4)
+	assert.Equal(t, ErrSameNode, err)
 
 	val, err := sl.Find(5)
 	require.NoError(t, err)
@@ -57,6 +61,55 @@ func TestSkipListNormal(t *testing.T) {
 	expected = []int{1, 2, 4, 5}
 	require.Equal(t, expected, res)
 	require.Equal(t, len(expected), sl.Len())
+}
+
+func TestSkipList_Insert(t *testing.T) {
+	testCases := []struct {
+		name        string
+		sl          *SkipList[int]
+		val         int
+		expectRes   []int
+		expectError error
+	}{
+		{
+			name:      "insert to empty skip list",
+			sl:        NewSkipList[int](comparator.PrimeComparator[int]),
+			val:       1,
+			expectRes: []int{1},
+		},
+		{
+			name: "insert to not empty skip list",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				_ = sl.Insert(1)
+				return sl
+			}(),
+			val:       2,
+			expectRes: []int{1, 2},
+		},
+		{
+			name: "insert same value to not empty skip list",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				_ = sl.Insert(1)
+				return sl
+			}(),
+			val:         1,
+			expectError: ErrSameNode,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			l := tc.sl.Len()
+			err := tc.sl.Insert(tc.val)
+			assert.Equal(t, tc.expectError, err)
+			if err != nil {
+				return
+			}
+			assert.Equal(t, l+1, tc.sl.Len())
+			assert.Equal(t, tc.expectRes, asSlice(tc.sl))
+		})
+	}
 }
 
 func asSlice[T any](sl *SkipList[T]) []T {
