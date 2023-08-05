@@ -43,7 +43,7 @@ type SkipList[T any] struct {
 
 func NewSkipList[T any](c comparator.Compare[T]) *SkipList[T] {
 	return &SkipList[T]{
-		header:  newNode[T](),
+		header:  newNode[T](maxLevel),
 		levels:  1,
 		length:  0,
 		compare: c,
@@ -100,7 +100,7 @@ func (s *SkipList[T]) find(val T) *node[T] {
 // Insert 插入一个新的值到跳表
 func (s *SkipList[T]) Insert(val T) error {
 	level := randomLevel()
-	n := newNode(withVal[T](val), withLevel[T](level))
+	n := newNode(level, withVal[T](val))
 	p, update := s.traverse(val, level)
 	if p.forward[0] != nil && s.compare(p.forward[0].val, val) == 0 {
 		return ErrSameNode
@@ -134,19 +134,19 @@ func (s *SkipList[T]) Delete(val T) {
 }
 
 type node[T any] struct {
-	val       T
-	forward   []*node[T] // 存储该节点在每层索引上的后继节点
-	nMaxLevel int
+	val     T
+	forward []*node[T] // 存储该节点在每层索引上的后继节点
+	level   int
 }
 
 type nodeOption[T any] func(n *node[T])
 
-func newNode[T any](opts ...nodeOption[T]) *node[T] {
+func newNode[T any](level int, opts ...nodeOption[T]) *node[T] {
 	var t T
 	n := &node[T]{
-		val:       t,
-		forward:   make([]*node[T], maxLevel),
-		nMaxLevel: 0,
+		val:     t,
+		forward: make([]*node[T], level),
+		level:   level,
 	}
 	for _, opt := range opts {
 		opt(n)
@@ -157,12 +157,6 @@ func newNode[T any](opts ...nodeOption[T]) *node[T] {
 func withVal[T any](val T) nodeOption[T] {
 	return func(n *node[T]) {
 		n.val = val
-	}
-}
-
-func withLevel[T any](level int) nodeOption[T] {
-	return func(n *node[T]) {
-		n.nMaxLevel = level
 	}
 }
 

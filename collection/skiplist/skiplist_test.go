@@ -18,6 +18,7 @@ import (
 	"github.com/igevin/algokit/comparator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"math"
 	"testing"
 )
 
@@ -27,17 +28,24 @@ func TestNewSkipList(t *testing.T) {
 	require.Equal(t, 1, sl.levels)
 	require.Equal(t, 0, sl.length)
 	header := sl.header
-	require.Equal(t, 0, header.nMaxLevel)
+	require.Equal(t, maxLevel, header.level)
 }
 
 func TestSkipListNormal(t *testing.T) {
 	sl := NewSkipList[int](comparator.PrimeComparator[int])
 	require.Equal(t, 0, sl.Len())
 	vals := []int{3, 2, 5, 1, 4}
+	m := math.MaxInt
 	for i, val := range vals {
+		if val < m {
+			m = val
+		}
 		err := sl.Insert(val)
 		assert.NoError(t, err)
 		assert.Equal(t, i+1, sl.Len())
+		f, err := sl.Front()
+		require.NoError(t, err)
+		assert.Equal(t, m, f)
 	}
 	res := asSlice(sl)
 	expected := []int{1, 2, 3, 4, 5}
