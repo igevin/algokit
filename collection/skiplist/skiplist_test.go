@@ -112,6 +112,148 @@ func TestSkipList_Insert(t *testing.T) {
 	}
 }
 
+func TestSkipList_Find(t *testing.T) {
+	testCases := []struct {
+		name        string
+		sl          *SkipList[int]
+		val         int
+		expectRes   int
+		expectError error
+	}{
+		{
+			name:        "empty skip list",
+			sl:          NewSkipList[int](comparator.PrimeComparator[int]),
+			val:         1,
+			expectError: ErrNodeNotFound,
+		},
+		{
+			name: " skip list, 1 element, not found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				_ = sl.Insert(1)
+				return sl
+			}(),
+			val:         2,
+			expectError: ErrNodeNotFound,
+		},
+		{
+			name: " skip list, 1 element, found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				_ = sl.Insert(1)
+				return sl
+			}(),
+			val:       1,
+			expectRes: 1,
+		},
+		{
+			name: "skip list, more elements, not found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				for _, el := range []int{1, 2, 3, 4, 5} {
+					_ = sl.Insert(el)
+				}
+
+				return sl
+			}(),
+			val:         6,
+			expectError: ErrNodeNotFound,
+		},
+		{
+			name: "skip list, more elements,  found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				for _, el := range []int{1, 2, 3, 4, 5} {
+					_ = sl.Insert(el)
+				}
+
+				return sl
+			}(),
+			val:       5,
+			expectRes: 5,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := tc.sl.Find(tc.val)
+			assert.Equal(t, tc.expectError, err)
+			if err != nil {
+				return
+			}
+			assert.Equal(t, tc.expectRes, res)
+		})
+	}
+}
+
+func TestSkipList_Delete(t *testing.T) {
+	testCases := []struct {
+		name        string
+		sl          *SkipList[int]
+		val         int
+		expectRes   []int
+		expectError error
+	}{
+		{
+			name:      "empty skip list",
+			sl:        NewSkipList[int](comparator.PrimeComparator[int]),
+			val:       1,
+			expectRes: []int{},
+		},
+		{
+			name: " skip list, 1 element, not found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				_ = sl.Insert(1)
+				return sl
+			}(),
+			val:       2,
+			expectRes: []int{1},
+		},
+		{
+			name: " skip list, 1 element, found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				_ = sl.Insert(1)
+				return sl
+			}(),
+			val:       1,
+			expectRes: []int{},
+		},
+		{
+			name: "skip list, more elements, not found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				for _, el := range []int{1, 2, 3, 4, 5} {
+					_ = sl.Insert(el)
+				}
+
+				return sl
+			}(),
+			val:       6,
+			expectRes: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name: "skip list, more elements,  found",
+			sl: func() *SkipList[int] {
+				sl := NewSkipList[int](comparator.PrimeComparator[int])
+				for _, el := range []int{1, 2, 3, 4, 5} {
+					_ = sl.Insert(el)
+				}
+
+				return sl
+			}(),
+			val:       5,
+			expectRes: []int{1, 2, 3, 4},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.sl.Delete(tc.val)
+			assert.Equal(t, tc.expectRes, asSlice(tc.sl))
+		})
+	}
+}
+
 func asSlice[T any](sl *SkipList[T]) []T {
 	res := make([]T, 0, 10)
 	p := sl.header.forward[0]
