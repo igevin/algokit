@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package tree
+package redblacktree
 
 type BinarySearchTree[K any, V any] interface {
 	Add(key K, value V) error
