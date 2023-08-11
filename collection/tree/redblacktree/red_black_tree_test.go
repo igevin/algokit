@@ -15,10 +15,11 @@
 package redblacktree
 
 import (
+	"testing"
+
 	"github.com/igevin/algokit/comparator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestNewRBTree(t *testing.T) {

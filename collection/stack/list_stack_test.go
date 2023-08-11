@@ -15,10 +15,11 @@
 package stack
 
 import (
+	"testing"
+
 	"github.com/igevin/algokit/collection/list"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestNewListStack(t *testing.T) {

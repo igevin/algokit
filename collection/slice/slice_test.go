@@ -16,10 +16,11 @@ package slice
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/igevin/algokit/internal/slice"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 type deleteFunc[T any] func(src []T, index int) ([]T, error)

@@ -16,9 +16,10 @@ package list
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/igevin/algokit/internal/slice"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestArrayList_Get(t *testing.T) {

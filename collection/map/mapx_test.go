@@ -15,8 +15,9 @@
 package mapx
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestKeys(t *testing.T) {

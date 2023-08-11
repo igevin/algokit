@@ -16,6 +16,7 @@ package redblacktree
 
 import (
 	"errors"
+
 	"github.com/igevin/algokit/comparator"
 )
 

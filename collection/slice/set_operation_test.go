@@ -15,9 +15,10 @@
 package slice
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIntersect(t *testing.T) {

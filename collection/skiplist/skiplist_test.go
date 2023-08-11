@@ -15,11 +15,12 @@
 package skiplist
 
 import (
+	"math"
+	"testing"
+
 	"github.com/igevin/algokit/comparator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"math"
-	"testing"
 )
 
 func TestNewSkipList(t *testing.T) {

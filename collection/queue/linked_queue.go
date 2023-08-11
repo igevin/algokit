@@ -16,6 +16,7 @@ package queue
 
 import (
 	"errors"
+
 	"github.com/igevin/algokit/collection/list"
 )
 

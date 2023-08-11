@@ -16,8 +16,9 @@ package skiplist
 
 import (
 	"errors"
-	"github.com/igevin/algokit/comparator"
 	"math/rand"
+
+	"github.com/igevin/algokit/comparator"
 )
 
 const (
