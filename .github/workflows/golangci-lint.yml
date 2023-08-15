@@ -17,11 +17,11 @@ on:
   push:
     branches:
       - dev
-      - master
+#      - master
   pull_request:
     branches:
       - dev
-      - master
+#      - master
 permissions:
   contents: read
   # Optional: allow read access to pull request. Use with `only-new-issues` option.
