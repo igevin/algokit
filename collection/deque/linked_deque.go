@@ -13,3 +13,26 @@
 // limitations under the License.
 
 package deque
+
+import "github.com/igevin/algokit/collection/list"
+
+type LinkedDeque[T any] struct {
+	l list.LinkedList[T]
+}
+
+func (q *LinkedDeque[T]) AddFirst(t T) error {
+	return q.l.Add(0, t)
+}
+
+func (q *LinkedDeque[T]) AddLast(t T) error {
+	return q.l.Append(t)
+}
+
+func (q *LinkedDeque[T]) RemoveFirst() (T, error) {
+	return q.l.Delete(0)
+}
+
+func (q *LinkedDeque[T]) RemoveLast() (T, error) {
+	i := q.l.Len() - 1
+	return q.l.Delete(i)
+}
