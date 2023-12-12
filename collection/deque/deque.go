@@ -16,12 +16,29 @@ package deque
 
 import "github.com/igevin/algokit/collection/list"
 
-type LinkedDeque[T any] struct {
-	baseDeque[T]
+type baseDeque[T any] struct {
+	l list.List[T]
 }
 
-func NewLinkedDeque[T any]() *LinkedDeque[T] {
-	return &LinkedDeque[T]{
-		baseDeque: newBaseDeque[T](list.NewLinkedList[T]()),
+func newBaseDeque[T any](l list.List[T]) baseDeque[T] {
+	return baseDeque[T]{
+		l: l,
 	}
+}
+
+func (q *baseDeque[T]) AddFirst(t T) error {
+	return q.l.Add(0, t)
+}
+
+func (q *baseDeque[T]) AddLast(t T) error {
+	return q.l.Append(t)
+}
+
+func (q *baseDeque[T]) RemoveFirst() (T, error) {
+	return q.l.Delete(0)
+}
+
+func (q *baseDeque[T]) RemoveLast() (T, error) {
+	i := q.l.Len() - 1
+	return q.l.Delete(i)
 }
