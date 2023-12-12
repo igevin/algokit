@@ -13,3 +13,35 @@
 // limitations under the License.
 
 package deque
+
+import "github.com/igevin/algokit/collection/list"
+
+type ArrayDequeue[T any] struct {
+	l list.ArrayList[T]
+}
+
+func (q *ArrayDequeue[T]) AddFirst(t T) error {
+	return q.l.Add(0, t)
+}
+
+func (q *ArrayDequeue[T]) AddLast(t T) error {
+	return q.l.Append(t)
+}
+
+func (q *ArrayDequeue[T]) RemoveFirst() (T, error) {
+	return q.l.Delete(0)
+}
+
+func (q *ArrayDequeue[T]) RemoveLast() (T, error) {
+	i := q.l.Len() - 1
+	return q.l.Delete(i)
+}
+
+func (q *ArrayDequeue[T]) PeekFirst() (T, error) {
+	return q.l.Get(0)
+}
+
+func (q *ArrayDequeue[T]) PeekLast() (T, error) {
+	i := q.l.Len() - 1
+	return q.l.Get(i)
+}
