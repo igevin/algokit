@@ -16,12 +16,13 @@ package queue
 
 import (
 	"fmt"
+	"sync"
+	"testing"
+
 	"github.com/igevin/algokit/collection/queue"
 	"github.com/igevin/algokit/comparator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"sync"
-	"testing"
 )
 
 var (

@@ -17,11 +17,12 @@ package queue
 import (
 	"context"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
-	"testing"
-	"time"
 )
 
 func TestDelayQueue_Dequeue(t *testing.T) {

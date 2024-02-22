@@ -15,9 +15,10 @@
 package queue
 
 import (
+	"sync"
+
 	"github.com/igevin/algokit/collection/queue"
 	"github.com/igevin/algokit/comparator"
-	"sync"
 )
 
 type ConcurrentPriorityQueue[T any] struct {

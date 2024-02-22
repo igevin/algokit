@@ -18,9 +18,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/igevin/algokit/collection/queue"
 	"sync"
 	"time"
+
+	"github.com/igevin/algokit/collection/queue"
 )
 
 type DelayQueue[T Delayable] struct {
