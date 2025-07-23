@@ -15,9 +15,10 @@
 package queue
 
 import (
-	"github.com/igevin/algokit/collection/queue"
 	"sync/atomic"
 	"unsafe"
+
+	"github.com/igevin/algokit/collection/queue"
 )
 
 // ConcurrentLinkedQueue 无界并发安全队列
