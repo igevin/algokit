@@ -90,6 +90,10 @@ func (s *SkipList[T]) traverse(val T, level int) (*node[T], []*node[T]) {
 // find 查找跳表中，是否存在值为val的索引项（节点），并返回该索引
 func (s *SkipList[T]) find(val T) *node[T] {
 	p, _ := s.traverse(val, s.levels)
+	// 防御性编程：如果 SkipList 未正确初始化（header 为 nil），traverse 返回 nil
+	if p == nil {
+		return nil
+	}
 	// 由于上层的数据，下层一定有，故不管当前在第几层，直接在第0层确认到底有没有该数据即可
 	if p.forward[0] != nil && s.compare(p.forward[0].val, val) == 0 {
 		return p.forward[0]
@@ -103,6 +107,9 @@ func (s *SkipList[T]) Insert(val T) error {
 	level := randomLevel()
 	n := newNode(level, withVal[T](val))
 	p, update := s.traverse(val, level)
+	if p == nil {
+		return errors.New("algokit: skiplist not initialized")
+	}
 	if p.forward[0] != nil && s.compare(p.forward[0].val, val) == 0 {
 		return ErrSameNode
 	}
@@ -119,6 +126,9 @@ func (s *SkipList[T]) Insert(val T) error {
 
 func (s *SkipList[T]) Delete(val T) {
 	p, update := s.traverse(val, s.levels)
+	if p == nil {
+		return
+	}
 	if p.forward[0] == nil || s.compare(p.forward[0].val, val) != 0 {
 		return
 	}
