@@ -43,8 +43,11 @@ func (a *ArrayList[T]) Add(index int, t T) error {
 	if index < 0 || index > len(a.data) {
 		return NewErrIndexOutOfRange(a.Len(), index)
 	}
+	// 先扩容（如果需要），确保有足够的空间
 	a.data = append(a.data, t)
+	// 将 index 位置及之后的元素向后移动一位
 	copy(a.data[index+1:], a.data[index:])
+	// 将新元素放入 index 位置
 	a.data[index] = t
 	return nil
 }

@@ -25,8 +25,9 @@ type LinkedQueue[T any] struct {
 }
 
 func NewLinkedQueue[T any]() *LinkedQueue[T] {
+	l := *list.NewLinkedList[T]()
 	return &LinkedQueue[T]{
-		l: *(list.NewLinkedList[T]()),
+		l: l,
 	}
 }
 
